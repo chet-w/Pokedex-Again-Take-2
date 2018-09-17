@@ -4,7 +4,7 @@ import { withNavigation } from 'react-navigation';
 import { Content, List, ListItem, View, Container } from 'native-base';
 // import * as request from 'request';
 // import * as cheerio from 'cheerio';
-import * as pk from 'pokemon';
+// import * as pk from 'pokemon';
 import { MaterialIndicator } from 'react-native-indicators';
 // import * as find from 'cheerio-eq';
 
