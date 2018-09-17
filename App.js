@@ -1,14 +1,27 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import PokemonSearch from './pages/pokemon-search.js';
+import Pokemon from './pages/pokemon.js';
+import BerriesSearch from './pages/berries-search.js';
+import { createDrawerNavigator } from 'react-navigation';
+import { StyleSheet } from 'react-native';
+
+
+const Drawer = createDrawerNavigator({
+  Pokemon: {
+    screen: PokemonSearch
+  },
+  PokemonPage: {
+    screen: Pokemon
+  },
+  Berries: {
+    screen: BerriesSearch
+  }
+})
 
 export default class App extends React.Component {
   render() {
     return (
-      <View style={styles.container}>
-        <Text>Open up App.js to start working on your app!</Text>
-        <Text>Changes you make will automatically reload.</Text>
-        <Text>Shake your phone to open the developer menu.</Text>
-      </View>
+      <Drawer />
     );
   }
 }
