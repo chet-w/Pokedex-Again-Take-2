@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import { Text } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { Content, List, ListItem, View, Container } from 'native-base';
-// import * as request from 'request';
-// import * as cheerio from 'cheerio';
-// import * as pk from 'pokemon';
+import Pokedex from "pokedex-promise-v2";
+
+
 import { MaterialIndicator } from 'react-native-indicators';
-// import * as find from 'cheerio-eq';
+
 
 import PageHeader from '../components/page-header.js';
 
@@ -19,6 +19,8 @@ class Pokemon extends Component {
         drawerLabel: () => null
     }
 
+    pokedex = new Pokedex();
+    
     constructor(props) {
         super(props);
         this.state = {
@@ -27,34 +29,106 @@ class Pokemon extends Component {
             loading: true
         }
         this.getData();
-        // setTimeout(() => {
-        //     this.setState({
-        //         loading: false
-        //     })
-        // }, 3000);
         
+
+    }
+
+    componentDidMount() {
+        setTimeout(() => {
+            this.setState({
+                loading: false
+            })
+        }, 3000);
+    }
+
+    getData(){
+        // Retrieve data from API
+        console.log("Getting data...")
+        let data = "";
+        this.pokedex.getPokemonByName('eevee').then(resp => {
+            data = this.refineData(resp);
+            console.log(data);
+        }).catch(err => {
+            if(err){
+                console.log(err)
+            }
+        });
+
+        
+    }
+
+    refineData(json){
+        let name = this.state.name;
+        let number = json.id;
+        let type = ""//this.getType(json.types);
+        let height = json.height;
+        let weight = json.weight;
+        let abilities = "" //this.getAbilties(json.abilities);
+        let moves = "" //this.getMoves(json.moves);
+        let stats = json.stats;//this.getStats(json.stats);
+        let sprites = json.sprites; //this.getSprites(json.sprites);
+
+        return {
+            name: name,
+            number: number,
+            type: type,
+            height: height,
+            weight: weight,
+            abilities: abilities,
+            moves: moves,
+            stats: stats,
+            sprites: sprites,
+        }
+    }
+
+    getType(json) {
+        let types = [];
+        json.forEach(el => {
+            const type = {
+                slot: el.slot,
+                name: el.type.name
+            };
+            types.push(type);
+        });
+        return types;
+    }
+
+    getAbilties(json) {
+        let abilities = [];
+        json.forEach(el => {
+            const ability = {
+                name: el.ability.name,
+                isHidden: el.isHidden
+            };
+            abilities.push(ability);
+        });
+        return abilities;
+    }
+
+    getMoves(json) {
+        let moves = [];
+        const version = "sun-moon";
+        json.forEach(el => {
+            const isInVersion = el.version_group_details.find(ver => {
+                return ver.version_group === version;
+            });
+            if(isInVersion){
+                const move = {
+                    name: el.move,
+                    level: el.version_group_details.find(ver => {
+                        return ver.version_group === version;
+                    })
+                };
+                moves.push(move);
+            }
+        });
+        return moves;
     }
 
     removeQuotes(string) {
         return string.substr(1, string.length - 2)
     }
 
-    getData() {
-        const id = pk.getId(this.state.name);
-        
-        // request('https://www.serebii.net/pokedex-bw/' + id + '.shtml', (error, response, html) => {
-        //     if(!error && response.statusCode == 200){
-        //         const $ = cheerio.load(html);
-        //         const prefix = "https://www.serebii.net";
-
-        //         const sprites = find($, ".dextable img:eq(0)").attr("src");
-
-        //         this.setState({
-        //             sprite: sprites
-        //         });
-        //     }
-        // });
-    }
 
     render() {
 
@@ -89,14 +163,14 @@ class Pokemon extends Component {
         )
 
         const loading = (
-            <MaterialIndicator color="red"/>
+            <MaterialIndicator color="red" />
         )
 
         let result = <Text>Didnt run</Text>
 
-        if(this.state.loading){
+        if (this.state.loading) {
             result = loading;
-        }else{
+        } else {
             result = content;
         }
 
