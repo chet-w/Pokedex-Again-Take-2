@@ -1,10 +1,19 @@
 import React from 'react';
-import PokemonSearch from './pages/pokemon-search.js';
-import Pokemon from './pages/pokemon.js';
-import BerriesSearch from './pages/berries-search.js';
 import { createDrawerNavigator } from 'react-navigation';
 import { StyleSheet } from 'react-native';
 import Expo from "expo";
+
+import PokemonSearch from './pages/pokemon-search.js';
+import Pokemon from './pages/pokemon.js';
+import BerriesSearch from './pages/berries-search.js';
+import Berry from './pages/berry.js';
+import MachinesSearch from './pages/machines-search.js';
+import Machine from './pages/machine.js';
+import Games from './pages/games.js';
+
+
+
+
 
 
 const Drawer = createDrawerNavigator({
@@ -16,6 +25,18 @@ const Drawer = createDrawerNavigator({
   },
   Berries: {
     screen: BerriesSearch
+  },
+  BerriesPage : {
+    screen: Berry
+  },
+  Machines: {
+    screen: MachinesSearch
+  },
+  MachinePage: {
+    screen: Machine
+  },
+  Games: {
+    screen: Games
   }
 })
 

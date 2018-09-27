@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text } from 'react-native';
+import { Text, Image, Dimensions } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { Content, List, ListItem, View, Container } from 'native-base';
 import Pokedex from "pokedex-promise-v2";
@@ -9,8 +9,7 @@ import { MaterialIndicator } from 'react-native-indicators';
 
 
 import PageHeader from '../components/page-header.js';
-
-
+import ListListItem from '../components/list-list-item.js';
 
 
 class Pokemon extends Component {
@@ -20,65 +19,83 @@ class Pokemon extends Component {
     }
 
     pokedex = new Pokedex();
-    
+
     constructor(props) {
         super(props);
         this.state = {
             name: this.removeQuotes(JSON.stringify(this.props.navigation.getParam('name', 'test'))),
-            sprite: "test",
+            data: { 
+                name: "",
+                number: "",
+                type: [],
+                height: "",
+                weight: "",
+                abilities: [],
+                moves: [],
+                stats: [],
+                sprites: ""
+            },
             loading: true
         }
         this.getData();
-        
-
     }
 
-    componentDidMount() {
-        setTimeout(() => {
-            this.setState({
-                loading: false
-            })
-        }, 3000);
-    }
+    
 
-    getData(){
+    getData() {
         // Retrieve data from API
         console.log("Getting data...")
         let data = "";
-        this.pokedex.getPokemonByName('eevee').then(resp => {
+        console.log(this.state.name.toLowerCase());
+        this.pokedex.getPokemonByName(this.state.name.toLowerCase()).then(resp => {
             data = this.refineData(resp);
-            console.log(data);
+            this.setState({ data: data, loading: false });
+            
         }).catch(err => {
-            if(err){
+            if (err) {
                 console.log(err)
             }
         });
 
-        
+
     }
 
-    refineData(json){
-        let name = this.state.name;
-        let number = json.id;
-        let type = ""//this.getType(json.types);
-        let height = json.height;
-        let weight = json.weight;
-        let abilities = "" //this.getAbilties(json.abilities);
-        let moves = "" //this.getMoves(json.moves);
-        let stats = json.stats;//this.getStats(json.stats);
-        let sprites = json.sprites; //this.getSprites(json.sprites);
+    refineData(json) {
+        const refined = {
+            name: this.state.name,
+            number: json.id,
+            type: this.getType(json.types),
+            height: json.height,
+            weight: json.weight,
+            abilities: this.getAbilties(json.abilities),
+            moves: this.getMoves(json.moves),
+            stats: this.getStats(json.stats),
+            sprites: this.getSprites(json.sprites),
+        };
 
-        return {
-            name: name,
-            number: number,
-            type: type,
-            height: height,
-            weight: weight,
-            abilities: abilities,
-            moves: moves,
-            stats: stats,
-            sprites: sprites,
+        console.log(refined);
+        return refined;
+    }
+
+    getSprites(json) {
+        const sprite = {
+            normal: json.front_default,
+            shiny: json.front_shiny
         }
+        return sprite;
+    }
+
+    getStats(json){
+        let stats = [];
+        json.forEach(el => {
+            const stat = {
+                name: this.formatString(el.stat.name),
+                base: el.base_stat,
+                effort: el.effort
+            }
+            stats.push(stat);
+        });
+        return stats;
     }
 
     getType(json) {
@@ -86,7 +103,7 @@ class Pokemon extends Component {
         json.forEach(el => {
             const type = {
                 slot: el.slot,
-                name: el.type.name
+                name: this.formatString(el.type.name)
             };
             types.push(type);
         });
@@ -97,12 +114,21 @@ class Pokemon extends Component {
         let abilities = [];
         json.forEach(el => {
             const ability = {
-                name: el.ability.name,
-                isHidden: el.isHidden
+                name: this.formatString(el.ability.name),
+                isHidden: el.is_hidden
             };
             abilities.push(ability);
         });
         return abilities;
+    }
+
+    formatString(string) {
+        let splitStr = string.toLowerCase().split('-');
+        for (let i = 0; i < splitStr.length; i++) {
+            splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+        }
+        const formatted = splitStr.join(' ');
+        return formatted;
     }
 
     getMoves(json) {
@@ -110,17 +136,27 @@ class Pokemon extends Component {
         const version = "sun-moon";
         json.forEach(el => {
             const isInVersion = el.version_group_details.find(ver => {
-                return ver.version_group === version;
+                return ver.version_group.name === version;
             });
-            if(isInVersion){
+            if (isInVersion) {
                 const move = {
-                    name: el.move,
+                    name: this.formatString(el.move.name),
                     level: el.version_group_details.find(ver => {
-                        return ver.version_group === version;
-                    })
+                        return ver.version_group.name === version;
+                    }).level_learned_at
                 };
-                moves.push(move);
+                if (move.level > 0) {
+                    moves.push(move);
+                }
             }
+        });
+        moves.sort((a, b) => {
+            if (a.level > b.level) {
+                return 1;
+            } if (a.level < b.level) {
+                return -1;
+            }
+            return 0;
         });
         return moves;
     }
@@ -132,33 +168,35 @@ class Pokemon extends Component {
 
     render() {
 
+        const showSprites = () => {
+            if(!this.state.data.sprites){
+                return null;
+            }
+            const normal  = this.state.data.sprites.normal;
+            const shiny = this.state.data.sprites.shiny;
+            const width = (Dimensions.get("window").width * 0.9 )/ 2
+
+            return (
+                <View>
+                    <ListItem>
+                        <Image source={{uri: normal}}  style={{width: width, height: width}} />
+                        <Image source={{uri: shiny}}  style={{width: width, height: width}} />
+                    </ListItem> 
+                </View>
+            )
+        }
+
         const content = (
             <List>
-                <ListItem itemHeader>
-                    <Text>Sprites</Text>
-                </ListItem>
-                <ListItem><Text>{this.state.sprite}</Text></ListItem>
-                <ListItem itemHeader>
-                    <Text>Typing</Text>
-                </ListItem>
-                <ListItem itemHeader>
-                    <Text>Abilities</Text>
-                </ListItem>
-                <ListItem itemHeader>
-                    <Text>Height & Weight</Text>
-                </ListItem>
-                <ListItem itemHeader>
-                    <Text>Held Items</Text>
-                </ListItem>
-                <ListItem itemHeader>
-                    <Text>Evolutions</Text>
-                </ListItem>
-                <ListItem itemHeader>
-                    <Text>Moves</Text>
-                </ListItem>
-                <ListItem itemHeader>
-                    <Text>Stats</Text>
-                </ListItem>
+                <ListItem itemHeader><Text>Sprites</Text></ListItem> 
+                {showSprites()}              
+                <ListItem itemHeader><Text>Typing</Text></ListItem>
+                <ListItem itemHeader><Text>Abilities</Text></ListItem>
+                <ListItem itemHeader><Text>Height & Weight</Text></ListItem>
+                <ListItem itemHeader><Text>Held Items</Text></ListItem>
+                <ListItem itemHeader><Text>Evolutions</Text></ListItem>
+                <ListItem itemHeader><Text>Moves</Text></ListItem>
+                <ListItem itemHeader><Text>Stats</Text></ListItem>
             </List>
         )
 
