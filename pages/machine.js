@@ -53,7 +53,7 @@ export default class Machine extends React.Component {
                 <ListItem itemDivider><Text>TYPE</Text></ListItem>
                 <Image source={{uri: path}} style={{height: width, width: width, marginLeft: width/2}} />
                 <ListItem itemDivider><Text>NUMBER</Text></ListItem>
-                <ListItem><Text>{this.state.data.id}</Text></ListItem>
+                <ListItem><Text>TM{this.state.data.id}</Text></ListItem>
                 <ListItem itemDivider><Text>DESCRIPTION</Text></ListItem>
                 <ListItem><Text>{this.state.data.description}</Text></ListItem>
                 <ListItem itemDivider><Text>POWER</Text></ListItem>

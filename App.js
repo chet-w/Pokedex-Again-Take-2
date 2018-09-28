@@ -9,13 +9,9 @@ import BerriesSearch from './pages/berries-search.js';
 import BerryList from './pages/berry-list.js';
 import Berry from './pages/berry.js';
 import MachinesSearch from './pages/machines-search.js';
+import MachineList from './pages/machine-list.js';
 import Machine from './pages/machine.js';
 import Games from './pages/games.js';
-
-
-
-
-
 
 const Drawer = createDrawerNavigator({
   Pokemon: {
@@ -35,6 +31,9 @@ const Drawer = createDrawerNavigator({
   },
   Machines: {
     screen: MachinesSearch
+  },
+  MachineListPage : {
+    screen: MachineList
   },
   MachinePage: {
     screen: Machine

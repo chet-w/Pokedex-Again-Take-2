@@ -50,6 +50,10 @@ export default class MachinesSearch extends React.Component {
             }
         }
 
+        const openMachineListPage = () => {
+            this.props.navigation.navigate('MachineListPage');
+        }
+
         return (
             <Container>
                 <PageHeader title="Machines" navigation={this.props.navigation} />
@@ -58,6 +62,8 @@ export default class MachinesSearch extends React.Component {
                     <Text>
                         {this.state.preamble}
                     </Text>
+                    <Button onPress={openMachineListPage} style={{marginTop: 40}}><Text>List of all Machines</Text></Button>
+                    
                     <Form>
                         <Item floatingLabel>
                             <Label>Machine Name</Label>

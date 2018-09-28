@@ -10,7 +10,8 @@ export default class Games extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            preamble: "Sample Text"
+            preamble: 'Pokemon is a huge franchise spanning over 20 years. Here are some of the most popular main series games.'
+       
         }
     }
 
@@ -22,7 +23,7 @@ export default class Games extends React.Component {
     render() {
 
         const cards = (
-            <View>
+            <View style={{marginBottom: 40}}>
                 <GameCard title="red" suffix="jpg" gen="1"/>
                 <GameCard title="blue" suffix="png" gen="1"/>
                 <GameCard title="green" suffix="png" gen="1" />
