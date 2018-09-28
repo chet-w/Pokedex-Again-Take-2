@@ -28,6 +28,12 @@ class CardListItem extends React.Component {
             });
         }
 
+        const openMachinePage = () => {
+            this.props.navigation.navigate('MachinePage', {
+                name: this.state.name
+            });
+        }
+
         let icon = () => {
             if(this.props.click === "pokemon"){
                 return (
@@ -36,6 +42,10 @@ class CardListItem extends React.Component {
             }if(this.props.click === "berry"){
                 return (
                     <Icon onPress={openBerryPage} name="arrow-forward" />
+                )
+            }if(this.props.click === "machine"){
+                return (
+                    <Icon onPress={openMachinePage} name="arrow-forward" />
                 )
             }
         };
