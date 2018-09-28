@@ -6,6 +6,7 @@ import Expo from "expo";
 import PokemonSearch from './pages/pokemon-search.js';
 import Pokemon from './pages/pokemon.js';
 import BerriesSearch from './pages/berries-search.js';
+import BerryList from './pages/berry-list.js';
 import Berry from './pages/berry.js';
 import MachinesSearch from './pages/machines-search.js';
 import Machine from './pages/machine.js';
@@ -25,6 +26,9 @@ const Drawer = createDrawerNavigator({
   },
   Berries: {
     screen: BerriesSearch
+  },
+  BerryListPage: {
+    screen: BerryList
   },
   BerriesPage : {
     screen: Berry

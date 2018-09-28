@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet } from 'react-native';
-import { Container, Content, Text, H1, Form, Item, Label, Input } from 'native-base';
+import { Container, Content, Text, H1, Form, Item, Label, Input, Button } from 'native-base';
 import CardListItem from '../components/card-list-item.js';
 import PageHeader from '../components/page-header.js';
 import { getAllBerries } from '../components/getBerries.js'
@@ -9,7 +9,7 @@ export default class BerriesSearch extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            preamble: "Type the name of a Berry to get some more information about it.",
+            preamble: `Type the name of a Berry to get some more information about it. \n\nOr browse a list of all the Berries if you're stuck.`,
             suggested: getAllBerries().slice(0, 10)
         }
     }
@@ -43,7 +43,12 @@ export default class BerriesSearch extends React.Component {
             }
         }
 
+        const openBerryListPage = () => {
+            this.props.navigation.navigate('BerryListPage');
+        }
+
         return (
+            
             <Container>
                 <PageHeader title="Berries" navigation={this.props.navigation} />
                 <Content padder>
@@ -51,6 +56,7 @@ export default class BerriesSearch extends React.Component {
                     <Text>
                         {this.state.preamble}
                     </Text>
+                    <Button onPress={openBerryListPage} style={{marginTop: 40}}><Text>List of all Berries</Text></Button>
                     <Form>
                         <Item floatingLabel>
                             <Label>Berry Name</Label>
