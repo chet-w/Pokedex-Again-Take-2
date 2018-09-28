@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Text, Image, Dimensions } from 'react-native';
 import { withNavigation } from 'react-navigation';
-import { Content, List, ListItem, View, Container } from 'native-base';
+import { Content, List, ListItem, View, Container, Accordion } from 'native-base';
 import Pokedex from "pokedex-promise-v2";
 
 
@@ -9,7 +9,6 @@ import { MaterialIndicator } from 'react-native-indicators';
 
 
 import PageHeader from '../components/page-header.js';
-import ListListItem from '../components/list-list-item.js';
 
 
 class Pokemon extends Component {
@@ -24,13 +23,13 @@ class Pokemon extends Component {
         super(props);
         this.state = {
             name: this.removeQuotes(JSON.stringify(this.props.navigation.getParam('name', 'test'))),
-            data: { 
+            data: {
                 name: "",
                 number: "",
-                type: [],
+                type: "",
                 height: "",
                 weight: "",
-                abilities: [],
+                abilities: "",
                 moves: [],
                 stats: [],
                 sprites: ""
@@ -40,7 +39,7 @@ class Pokemon extends Component {
         this.getData();
     }
 
-    
+
 
     getData() {
         // Retrieve data from API
@@ -50,7 +49,7 @@ class Pokemon extends Component {
         this.pokedex.getPokemonByName(this.state.name.toLowerCase()).then(resp => {
             data = this.refineData(resp);
             this.setState({ data: data, loading: false });
-            
+
         }).catch(err => {
             if (err) {
                 console.log(err)
@@ -85,7 +84,7 @@ class Pokemon extends Component {
         return sprite;
     }
 
-    getStats(json){
+    getStats(json) {
         let stats = [];
         json.forEach(el => {
             const stat = {
@@ -169,34 +168,129 @@ class Pokemon extends Component {
     render() {
 
         const showSprites = () => {
-            if(!this.state.data.sprites){
-                return null;
-            }
-            const normal  = this.state.data.sprites.normal;
+            const normal = this.state.data.sprites.normal;
             const shiny = this.state.data.sprites.shiny;
-            const width = (Dimensions.get("window").width * 0.9 )/ 2
+            const width = (Dimensions.get("window").width * 0.9) / 2
 
             return (
                 <View>
                     <ListItem>
-                        <Image source={{uri: normal}}  style={{width: width, height: width}} />
-                        <Image source={{uri: shiny}}  style={{width: width, height: width}} />
-                    </ListItem> 
+                        <Image source={{ uri: normal }} style={{ width: width, height: width }} />
+                        <Image source={{ uri: shiny }} style={{ width: width, height: width }} />
+                    </ListItem>
                 </View>
             )
         }
 
+        const showTypes = () => {
+            let types = [];
+            for (let i = 0; i < this.state.data.type.length; i++) {
+                const type = (
+                    <ListItem key={i}>
+                        <Text>{this.state.data.type[i].name}</Text>
+                    </ListItem>
+                )
+                types.push(type);
+            }
+            return types;
+        }
+
+        const showAbilities = () => {
+            let abilities = [];
+            for (let i = 0; i < this.state.data.abilities.length; i++) {
+                let isHidden = (
+                    <Text></Text>
+                )
+                if (this.state.data.abilities[i].isHidden) {
+                    isHidden = (
+                        <Text> (Hidden)</Text>
+                    );
+                }
+                const ability = (
+                    <ListItem key={i}>
+                        <Text>{this.state.data.abilities[i].name}</Text>
+                        {isHidden}
+                    </ListItem>
+                )
+                abilities.push(ability);
+            }
+            return abilities;
+
+        }
+
+        const showHeightAndWeight = () => {
+            const height = (
+                <ListItem>
+                    <Text>Height: {this.state.data.height} inches</Text>
+                </ListItem>
+            )
+            const weight = (
+                <ListItem>
+                    <Text>Weight: {this.state.data.weight} lbs</Text>
+                </ListItem>
+            )
+            return (
+                <View>
+                    {height}
+                    {weight}
+                </View>
+            );
+
+        }
+
+        const showStats = () => {
+            let stats = [
+                { title: "STATS", content: "" }
+            ];
+
+            let allStats = "";
+            
+            this.state.data.stats.forEach(el => {
+                allStats = allStats +
+                `
+                ${el.name} \n
+                Base Experience: ${el.base}\n
+                Effort points: ${el.effort}\n
+                `
+            });
+            stats[0].content = allStats;
+            return stats;
+        }
+
+        const showMoves = () => {
+            let moves = [
+                { title: "MOVES", content: "" }
+            ];
+
+            let allMoves = "";
+
+            this.state.data.moves.forEach(el => {
+                allMoves = allMoves + 
+                `
+                ${el.name} \n
+                Learnt at level: ${el.level} \n
+                `;
+            })
+
+            moves[0].content = allMoves;
+            return moves;
+
+        }
+
+
         const content = (
             <List>
-                <ListItem itemHeader><Text>Sprites</Text></ListItem> 
-                {showSprites()}              
-                <ListItem itemHeader><Text>Typing</Text></ListItem>
-                <ListItem itemHeader><Text>Abilities</Text></ListItem>
-                <ListItem itemHeader><Text>Height & Weight</Text></ListItem>
-                <ListItem itemHeader><Text>Held Items</Text></ListItem>
-                <ListItem itemHeader><Text>Evolutions</Text></ListItem>
-                <ListItem itemHeader><Text>Moves</Text></ListItem>
-                <ListItem itemHeader><Text>Stats</Text></ListItem>
+                <ListItem itemDivider><Text>SPRITES</Text></ListItem>
+                {showSprites()}
+                <ListItem itemDivider><Text>TYPING</Text></ListItem>
+                {showTypes()}
+                <ListItem itemDivider><Text>ABILITIES</Text></ListItem>
+                {showAbilities()}
+                <ListItem itemDivider><Text>HEIGHT & WEIGHT</Text></ListItem>
+                {showHeightAndWeight()}
+                <Accordion dataArray={showMoves()} icon="add" expandedIcon="remove"/>
+                <Accordion dataArray={showStats()} icon="add" expandedIcon="remove"/>
+                
             </List>
         )
 
