@@ -22,12 +22,31 @@ class CardListItem extends React.Component {
             });
         }
 
+        const openBerryPage = () => {
+            this.props.navigation.navigate('BerriesPage', {
+                name: this.state.name
+            });
+        }
+
+        let icon = () => {
+            if(this.props.click === "pokemon"){
+                return (
+                    <Icon onPress={openPokemonPage} name="arrow-forward" />
+                )
+            }if(this.props.click === "berry"){
+                return (
+                    <Icon onPress={openBerryPage} name="arrow-forward" />
+                )
+            }
+        };
+        
+
         return (
             <Card >
                 <CardItem>
                     <Text>{this.state.name}</Text>
                     <Right>
-                        <Icon onPress={openPokemonPage} name="arrow-forward" />
+                        {icon()}
                     </Right>
                 </CardItem>
              </Card>

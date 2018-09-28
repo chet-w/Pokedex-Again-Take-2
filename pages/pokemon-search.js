@@ -26,7 +26,7 @@ export default class PokemonSearch extends React.Component {
 
         const suggestions = this.state.suggested.map(el => {
             return (
-                <CardListItem name={el} key={el} />
+                <CardListItem click="pokemon" name={el} key={el} />
             )
         });
 
