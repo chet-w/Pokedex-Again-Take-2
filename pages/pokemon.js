@@ -43,9 +43,7 @@ class Pokemon extends Component {
 
     getData() {
         // Retrieve data from API
-        console.log("Getting data...")
         let data = "";
-        console.log(this.state.name.toLowerCase());
         this.pokedex.getPokemonByName(this.state.name.toLowerCase()).then(resp => {
             data = this.refineData(resp);
             this.setState({ data: data, loading: false });
@@ -55,8 +53,6 @@ class Pokemon extends Component {
                 console.log(err)
             }
         });
-
-
     }
 
     refineData(json) {
